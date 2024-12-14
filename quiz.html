@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #1d3557, #457b9d);
+            color: #f1faee;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .quiz-container {
+            background: #1d3557;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .question {
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        .options button {
+            background: #457b9d;
+            border: none;
+            padding: 10px 15px;
+            margin: 10px;
+            color: #f1faee;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .options button:hover {
+            background: #a8dadc;
+            color: #1d3557;
+        }
+        .timer {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .score {
+            font-size: 22px;
+            margin-top: 20px;
+        }
+        .start-btn {
+            background: #e63946;
+            color: #f1faee;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .start-btn:hover {
+            background: #f4a261;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container" id="quizContainer">
+        <h1>Tech Quiz</h1>
+        <div id="quiz">
+            <button class="start-btn" onclick="startQuiz()">Start Quiz</button>
+        </div>
+        <div id="scoreContainer" class="score" style="display: none;"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "What does HTML stand for?",
+                options: ["Hyper Text Markup Language", "Home Tool Markup Language", "Hyperlinks Text Mark Language"],
+                answer: 0
+            },
+            {
+                question: "Which programming language is known as the backbone of web development?",
+                options: ["Python", "JavaScript", "C++"],
+                answer: 1
+            },
+            {
+                question: "What is the name of the database management system used with PHP?",
+                options: ["MongoDB", "MySQL", "Firebase"],
+                answer: 1
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        const timeLimit = 10; // Time for each question
+
+        function startQuiz() {
+            score = 0;
+            currentQuestionIndex = 0;
+            document.getElementById("scoreContainer").style.display = "none";
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endQuiz();
+                return;
+            }
+
+            const questionData = questions[currentQuestionIndex];
+            const quizContainer = document.getElementById("quiz");
+            quizContainer.innerHTML = `
+                <div class="timer">Time Left: <span id="timer">${timeLimit}</span>s</div>
+                <div class="question">${questionData.question}</div>
+                <div class="options">
+                    ${questionData.options.map((option, index) => `<button onclick="checkAnswer(${index})">${option}</button>`).join('')}
+                </div>
+            `;
+
+            startTimer();
+        }
+
+        function startTimer() {
+            let timeLeft = timeLimit;
+            const timerDisplay = document.getElementById("timer");
+            timerDisplay.textContent = timeLeft;
+
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    nextQuestion();
+                }
+            }, 1000);
+        }
+
+        function checkAnswer(selectedIndex) {
+            clearInterval(timer);
+            const questionData = questions[currentQuestionIndex];
+
+            if (selectedIndex === questionData.answer) {
+                score += 10;
+            }
+
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function endQuiz() {
+            const quizContainer = document.getElementById("quiz");
+            quizContainer.innerHTML = "<h2>Quiz Completed!</h2>";
+
+            const scoreContainer = document.getElementById("scoreContainer");
+            scoreContainer.style.display = "block";
+            scoreContainer.textContent = `Your Score: ${score}/${questions.length * 10}`;
+        }
+    </script>
+</body>
+</html>
